@@ -1,9 +1,13 @@
 const router = require('express').Router()
 const db = require("../models")
-
 const { Place, Comment, User } = db
 
 router.post('/', async (req, res) => {
+
+    if(req.currenteUser?.role !== 'admin'){
+        return res.status(403).json({ message: 'You are not allowed to add place'})
+    }
+
     if (!req.body.pic) {
         req.body.pic = 'http://placekitten.com/400/400'
     }
@@ -19,13 +23,16 @@ router.post('/', async (req, res) => {
 
 
 router.get('/', async (req, res) => {
+
     const places = await Place.findAll()
     res.json(places)
 })
 
 
 router.get('/:placeId', async (req, res) => {
+
     let placeId = Number(req.params.placeId)
+
     if (isNaN(placeId)) {
         res.status(404).json({ message: `Invalid id "${placeId}"` })
     } else {
@@ -46,6 +53,11 @@ router.get('/:placeId', async (req, res) => {
 
 router.put('/:placeId', async (req, res) => {
     let placeId = Number(req.params.placeId)
+
+    if(req.currenteUser?.role !== 'admin'){
+        return res.status(403).json({ message: 'You are not allowed to add place'})
+    }
+
     if (isNaN(placeId)) {
         res.status(404).json({ message: `Invalid id "${placeId}"` })
     } else {
@@ -64,6 +76,11 @@ router.put('/:placeId', async (req, res) => {
 
 router.delete('/:placeId', async (req, res) => {
     let placeId = Number(req.params.placeId)
+
+    if(req.currenteUser?.role !== 'admin'){
+        return res.status(403).json({ message: 'You are not allowed to add place'})
+    }
+
     if (isNaN(placeId)) {
         res.status(404).json({ message: `Invalid id "${placeId}"` })
     } else {
